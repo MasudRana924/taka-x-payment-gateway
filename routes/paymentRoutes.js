@@ -64,12 +64,14 @@ router.post('/create/payment', (req, res) => {
 
         // Create payment URL
         const paymentURL = `http://localhost:3000/checkout/${paymentId}`;
-
+        const callbackURL = `http://localhost:3000/checkout/${callbackurl}`;
+        
         // Respond with payment details
         res.status(200).json({
             paymentId,
             amount,
             paymentURL,
+            callbackurl
         });
     });
 });
@@ -77,9 +79,9 @@ router.post('/create/payment', (req, res) => {
 // Payment Page Route
 router.get('/:paymentId', (req, res) => {
     const { paymentId } = req.params;
-
     // Render the payment input page
     res.render('payment', { paymentId });
 });
+
 router.post('/execute', executePayment);
 module.exports = router;
