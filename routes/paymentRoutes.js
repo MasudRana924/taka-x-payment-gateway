@@ -63,7 +63,8 @@ router.post('/create/payment', (req, res) => {
         const paymentId = uuidv4();
 
         // Create payment URL
-        const paymentURL = `http://localhost:3000/checkout/${paymentId}`;
+        // const paymentURL = `http://localhost:3000/checkout/${paymentId}`;
+        const paymentURL = `https://taka-x-payment-gateway.onrender.com/checkout/${paymentId}`;
         const callbackURL = `http://localhost:3000/checkout/${callbackurl}`;
         
         // Respond with payment details
