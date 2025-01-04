@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TakaX Payment Flow</title>
+    <title>TakaPay Payment Only</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -15,39 +16,62 @@
             align-items: center;
             justify-content: center;
         }
+
         .container {
             width: 100%;
             max-width: 550px;
             background: white;
             border-radius: 0px;
             /* padding: 30px; */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             position: relative;
         }
+
         .screen {
             display: none;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+
         .screen.active {
             display: block;
             opacity: 1;
         }
+
         .logo {
             text-align: center;
             margin: 0 0 20px;
-            font-size: 32px;
+            font-size: 22px;
             color: #2196F3;
-            font-weight: bold;
+            font-weight:500;
             letter-spacing: 1px;
-            text-shadow: 2px 2px 4px rgba(33,150,243,0.1);
+            text-shadow: 2px 2px 4px rgba(33, 150, 243, 0.1);
             padding-top: 30px;
         }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            /* Space between the logo text and the image */
+            margin-bottom: 20px;
+            padding-top: 10px;
+        }
+
+        .logo-image {
+            width: 80px;
+            height: 60px;
+            /* object-fit: contain; */
+            margin-top: 15px;
+        }
+
         .divider {
             /* width: 100%;
             height: 2px;
             margin: 20px 0; */
         }
+
         .header-content {
             display: flex;
             align-items: center;
@@ -56,6 +80,7 @@
             margin-top: 30px;
             padding-left: 30px;
         }
+
         .header-image {
             width: 40px;
             height: 40px;
@@ -63,22 +88,30 @@
             border-radius: 8px;
             border-color: 1px solid gray;
         }
+
         .header-title {
             font-size: 16px;
             color: #333;
             margin: 0;
             font-weight: 300;
-            
+
         }
+
         .input-field {
-            position: relative;
-            background: linear-gradient(145deg, #1e88e5, #2196F3);
-            padding: 30px;
-            /* border-radius: 12px; */
-            margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(33,150,243,0.2);
-            transition: transform 0.3s ease;
-        }
+    position: relative;
+    background: linear-gradient(145deg, #1e88e5, #2196F3);
+    padding: 30px; /* Padding from all sides */
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+    transition: transform 0.3s ease;
+    height: 300px; /* Fixed height */
+    display: flex; /* Flexbox enabled */
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+}
+
+
         .loading-overlay {
             display: none;
             position: absolute;
@@ -92,10 +125,12 @@
             align-items: center;
             z-index: 1000;
         }
+
         .loading-dots {
             display: flex;
             gap: 8px;
         }
+
         .dot {
             width: 12px;
             height: 12px;
@@ -103,15 +138,32 @@
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out;
         }
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
         }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
         .input-field:hover {
             transform: translateY(-2px);
         }
+
         .input-label {
             color: white;
             margin-bottom: 15px;
@@ -120,21 +172,35 @@
             font-weight: 500;
             text-align: center;
         }
+
         input {
             width: 100%;
             padding: 15px;
-            border: none;
+            border: 2px solid transparent;
+            /* Default state */
             border-radius: 8px;
             font-size: 18px;
             box-sizing: border-box;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #fff;
+            /* Ensure background is visible */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
             transition: all 0.3s ease;
+            /* Smooth transition */
         }
+
         input:focus {
-            outline: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            outline: 2px solid #2196F3;
+            /* Blue outline */
+            border-color: #2196F3;
+            /* Blue border */
+            box-shadow: 0 0 10px #2196F3;
+            /* Glowing effect */
+            background-color: #f0f8ff;
+            /* Light blue background for focus */
         }
+
         .terms {
             text-align: center;
             margin: 15px 0;
@@ -142,6 +208,7 @@
             font-size: 16px;
             font-weight: 500;
         }
+
         .error-message {
             color: white;
             text-align: center;
@@ -149,12 +216,14 @@
             font-size: 14px;
             min-height: 20px;
         }
+
         .button-container {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
+            /* margin-top: 5px; */
             padding: 30px;
         }
+
         button {
             flex: 1;
             padding: 16px;
@@ -165,27 +234,33 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .cancel-btn {
             background-color: #f5f5f5;
             color: #333;
         }
+
         .cancel-btn:hover {
             background-color: #e0e0e0;
         }
+
         .confirm-btn {
             background-color: #9e9e9e;
             color: white;
             opacity: 0.8;
         }
+
         .confirm-btn.active {
             background-color: #2196F3;
             opacity: 1;
-            box-shadow: 0 4px 15px rgba(33,150,243,0.3);
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
         }
+
         .confirm-btn.active:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(33,150,243,0.4);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
         }
+
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -195,11 +270,16 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Account Number Screen -->
         <div class="screen active" id="accountScreen">
-            <div class="logo">TakaX</div>
+            <div class="logo-container">
+
+                <div class="logo">TakaPay</div>
+                <img src="https://cdn-icons-png.flaticon.com/128/5876/5876216.png" alt="Logo" class="logo-image">
+            </div>
             <hr class="divider">
             <div class="header-content">
                 <img src="https://thumbs.dreamstime.com/b/national-flags-261957113.jpg" alt="Demo" class="header-image">
@@ -215,10 +295,11 @@
                 </div>
                 <label class="input-label">Enter Account Number</label>
                 <input type="text" id="accountNumber" placeholder="01XXXXXXXXX" maxlength="11">
-                <div class="error-message"></div>
+
                 <div class="terms">
                     Confirm and proceed, terms & conditions
                 </div>
+                <div class="error-message"></div>
             </div>
             <div class="button-container">
                 <button class="cancel-btn">Cancel</button>
@@ -228,10 +309,14 @@
 
         <!-- OTP Screen -->
         <div class="screen" id="otpScreen">
-            <div class="logo">TakaX</div>
+            <div class="logo-container">
+
+                <div class="logo">TakaPay</div>
+                <img src="https://cdn-icons-png.flaticon.com/128/5876/5876216.png" alt="Logo" class="logo-image">
+            </div>
             <hr class="divider">
             <div class="header-content">
-                <img src="/api/placeholder/60/60" alt="Demo" class="header-image">
+                <img src="https://thumbs.dreamstime.com/b/national-flags-261957113.jpg" alt="Demo" class="header-image">
                 <h2 class="header-title">Test Demo</h2>
             </div>
             <div class="input-field">
@@ -243,12 +328,13 @@
                     </div>
                 </div>
                 <label class="input-label">Enter OTP</label>
-            
+
                 <input type="text" id="otpNumber" placeholder="XXXXXX" maxlength="6">
-                <div class="error-message"></div>
+
                 <div class="terms">
                     Confirm and proceed, terms & conditions
                 </div>
+                <div class="error-message"></div>
             </div>
             <div class="button-container">
                 <button class="cancel-btn">Cancel</button>
@@ -258,10 +344,14 @@
 
         <!-- PIN Screen -->
         <div class="screen" id="pinScreen">
-            <div class="logo">TakaX</div>
+            <div class="logo-container">
+
+                <div class="logo">TakaPay</div>
+                <img src="https://cdn-icons-png.flaticon.com/128/5876/5876216.png" alt="Logo" class="logo-image">
+            </div>
             <hr class="divider">
             <div class="header-content">
-                <img src="/api/placeholder/60/60" alt="Demo" class="header-image">
+                <img src="https://thumbs.dreamstime.com/b/national-flags-261957113.jpg" alt="Demo" class="header-image">
                 <h2 class="header-title">Test Demo</h2>
             </div>
             <div class="input-field">
@@ -274,10 +364,11 @@
                 </div>
                 <label class="input-label">Enter PIN</label>
                 <input type="password" id="pinNumber" placeholder="XXXXX" maxlength="5">
-                <div class="error-message"></div>
+
                 <div class="terms">
                     Confirm and proceed, terms & conditions
                 </div>
+                <div class="error-message"></div>
             </div>
             <div class="button-container">
                 <button class="cancel-btn">Cancel</button>
@@ -416,4 +507,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -21,7 +21,7 @@ mongoose
     .catch((err) => console.error(err));
 
 // Routes
-app.use('/checkout', paymentRoutes);
+app.use('/api/version/1.00-beta/checkout', paymentRoutes);
 
 // Start the Server
 const port = 3000;

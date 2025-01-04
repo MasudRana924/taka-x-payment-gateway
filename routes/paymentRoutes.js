@@ -28,7 +28,10 @@ router.post('/create/token', (req, res) => {
     const token = jwt.sign({ username: validUsername }, secretKey, { expiresIn: '60m' });
 
     // Return token and expiration time
-    res.status(200).json({ token, expire: '60m' });
+    res.status(200).json({
+        status: 'successful',
+        token, expire: '60m'
+    });
 });
 router.post('/create/payment', (req, res) => {
     const { token, app_key } = req.headers;
@@ -60,25 +63,26 @@ router.post('/create/payment', (req, res) => {
         }
 
         // Generate a unique payment ID
-        const paymentId = uuidv4();
+        const paymentId = `TR${uuidv4()}`;
 
         // Create payment URL
-        // const paymentURL = `http://localhost:3000/checkout/${paymentId}`;
-        const paymentURL = `https://taka-x-payment-gateway.onrender.com/checkout/${paymentId}`;
+        const paymentURL = `http://localhost:3000/api/version/1.00-beta/checkout/paymentID=${paymentId}`;
+        // const paymentURL = `https://taka-x-payment-gateway.onrender.com/checkout/${paymentId}`;
         const callbackURL = `http://localhost:3000/checkout/${callbackurl}`;
-        
+
         // Respond with payment details
         res.status(200).json({
             paymentId,
             amount,
             paymentURL,
-            callbackurl
+            callbackurl,
+            status: 'successful',
         });
     });
 });
 
 // Payment Page Route
-router.get('/:paymentId', (req, res) => {
+router.get('/paymentID=:paymentId', (req, res) => {
     const { paymentId } = req.params;
     // Render the payment input page
     res.render('payment', { paymentId });
