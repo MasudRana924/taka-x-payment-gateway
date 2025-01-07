@@ -9,7 +9,25 @@ const PaymentSchema = new mongoose.Schema({
     },
     amount: {
         type: Number,
-        // required: true,
+       
+    },
+    currency: {
+        type: String,
+        default: 'BDT',
+    },
+    intent: {
+        type: String,
+        default: 'sale',
+    },
+    paymentURL: {
+        type: String,
+    },
+    callbackurl: {
+        type: String,
+    },
+    state: {
+        type: String,
+        default: 'initiate',
     },
     createdAt: {
         type: Date,

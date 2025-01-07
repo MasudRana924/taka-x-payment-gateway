@@ -1,376 +1,657 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TakaPay Payment</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%234CAF50' stroke='white' stroke-width='5' /%3E%3Ctext x='50' y='55' font-family='Arial, sans-serif' font-size='28' text-anchor='middle' fill='white'%3E%E0%A6%BD%3C/text%3E%3Cpath d='M30 50 L45 35 L60 50 L45 65 Z' fill='white' /%3E%3C/svg%3E" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Add this CSS to define the loader animation */
-    .dots {
-      display: inline-block;
-      font-size: 24px;
-      font-weight: bold;
-      color: white;
-      /* Make the dots white */
-      line-height: 0;
-      /* Ensure the dots are vertically aligned */
-    }
-
-    .dot {
-      display: inline-block;
-      animation: dot 1.5s infinite;
-    }
-
-    .dot:nth-child(1) {
-      animation-delay: 0s;
-    }
-
-    .dot:nth-child(2) {
-      animation-delay: 0.3s;
-    }
-
-    .dot:nth-child(3) {
-      animation-delay: 0.6s;
-    }
-
-    @keyframes dot {
-      0% {
-        opacity: 0;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TakaPay Payment</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%234CAF50' stroke='white' stroke-width='5' /%3E%3Ctext x='50' y='55' font-family='Arial, sans-serif' font-size='28' text-anchor='middle' fill='white'%3E%E0%A6%BD%3C/text%3E%3Cpath d='M30 50 L45 35 L60 50 L45 65 Z' fill='white' /%3E%3C/svg%3E"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Add this CSS to define the loader animation */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3); /* Adjust opacity here */
+        z-index: -1; /* Ensure it stays behind the content */
+      }
+      .dots {
+        display: inline-block;
+        font-size: 30px;
+        font-weight: bold;
+        color: white;
+        /* Make the dots white */
+        line-height: 0;
+        /* Ensure the dots are vertically aligned */
       }
 
-      50% {
-        opacity: 1;
+      .dot {
+        display: inline-block;
+        animation: dot 1.5s infinite;
       }
 
-      100% {
-        opacity: 0;
+      .dot:nth-child(1) {
+        animation-delay: 0s;
       }
-    }
 
-    /* Ensure button background stays black and height is fixed */
-    #account-confirm-btn {
-      background-color: black !important;
-      /* Force the background to stay black */
-      color: white;
-      /* Make the text white */
-      height: 50px;
-      /* Set a fixed height for the button */
-      display: flex;
-      align-items: center;
-      /* Vertically center content */
-      justify-content: center;
-      /* Horizontally center content */
-      padding: 0;
-      /* Ensure no extra padding affects the size */
-    }
+      .dot:nth-child(2) {
+        animation-delay: 0.3s;
+      }
 
-    /* When the button is in the "loading" state, display the dots */
-    #account-confirm-btn.loading {
-      pointer-events: none;
-      /* Prevent clicks during loading */
-    }
+      .dot:nth-child(3) {
+        animation-delay: 0.6s;
+      }
 
-    #account-confirm-btn.loading .dots {
-      display: inline-block;
-      /* Show the dots when loading */
-    }
-  </style>
-
-
-
-
-</head>
-
-<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-  <!-- account screen  -->
-  <div id="account-screen" class="w-full max-w-md mx-auto bg-white rounded-lg shadow-xl">
-    <!-- Header -->
-    <div class="flex items-center justify-between m-6 border-b border-gray-100  pb-6">
-      <div class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-20 h-20">
-          <!-- Circle representing a coin or financial aspect -->
-          <circle cx="50" cy="50" r="40" fill="#4CAF50" stroke="white" stroke-width="5" />
-          
-          <!-- Taka symbol (৳) in the center -->
-          <text x="50" y="55" font-family="Arial, sans-serif" font-size="28" text-anchor="middle" fill="white">৳</text>
-          
-          <!-- Payment arrow representing transaction flow -->
-          <path d="M30 50 L45 35 L60 50 L45 65 Z" fill="white" />
-        </svg>
-        
-   
-        <h1 class="text-xl font-bold text-gray-800">TakaPay</h1>
-      </div>
-      <button class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 6 6 18M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Merchant Info -->
-    <div class="flex items-center justify-between mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100 mx-6">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="150" height="150">
-            <!-- Green Background Circle -->
-            <circle cx="12" cy="12" r="11" fill="#006a4e" />
-            <!-- Red Circle -->
-            <circle cx="9" cy="12" r="4" fill="#f42a41" />
-          </svg>
-          
-          
-        </div>
-        <div class="flex flex-col">
-          <span class="font-medium text-gray-900">Sample Merchant</span>
-        </div>
-      </div>
-      <div class="text-right">
-        <p class="font-bold text-xl text-gray-900">ট 1000.00</p>
-      </div>
-    </div>
-
-    <!-- Input Section -->
-    <div class="w-full h-[250px]  bg-black px-6 py-8 flex flex-col items-center justify-center">
-      <label for="account-input" class="text-gray-200 text-md mb-4 text-center">
-        Enter Wallet Number
-      </label>
-      <input type="text" id="account-input"
-        class="block w-3/4 max-w-xs  px-4 py-4 text-xl border rounded-lg text-center bg-gray-50 transition-all"
-        placeholder="01XXXXXXXXX" maxlength="11" />
-      <div id="error-message" class="hidden mt-4 text-red-500 text-center">
-        <!-- Error message will appear here -->
-      </div>
-      <div class="mt-4">
-        <p class="text-sm text-gray-400 text-center">
-          By confirm you agree to terms and conditions
-        </p>
-      </div>
-    </div>
-
-    <!-- Confirm Button -->
-    <button
-      class="w-11/12 mx-auto mt-6 py-4 px-6 rounded-lg font-medium transition-all duration-300 transform hover:scale-[0.99] flex items-center justify-center  bg-black text-white hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-      id="account-confirm-btn" disabled>
-      <span id="btn-text">Confirm</span>
-    </button>
-
-    <!-- Footer -->
-    <div class="m-6 pt-4 border-t border-gray-100">
-      <p class="text-xs text-gray-500 text-center">
-        Secured by TakaPay © 2025
-      </p>
-    </div>
-  </div>
-
-
-  <!-- OTP screen -->
-  <div id="otp-screen" class="hidden w-full max-w-md mx-auto bg-white rounded-lg shadow-xl">
-    <!-- Header -->
-    <div class="flex items-center justify-between m-6 border-b border-gray-100 pt-4 pb-8">
-      <div class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-800" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 11V4H4v7m0 4h16v7H4v-7m12 3H8" />
-        </svg>
-        <h1 class="text-xl font-bold text-gray-800">TakaPay</h1>
-      </div>
-      <button class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 6 6 18M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Merchant Info -->
-    <div class="flex items-center justify-between mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100 mx-6">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 14a2 2 0 0 0-2-2h-4m6-6v10m-2-8h-6m-2-2v2m0 10h-2v2M3 16h18M9 12H4v4h2v2h2" />
-          </svg>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-medium text-gray-900">Sample Merchant</span>
-        </div>
-      </div>
-      <div class="text-right">
-        <p class="font-bold text-xl text-gray-900">ট 1000.00</p>
-      </div>
-    </div>
-
-    <!-- Input Section -->
-    <div class="w-full h-[250px] bg-black flex flex-col items-center justify-center relative">
-      <label for="otp-input" class="mb-4 text-gray-200 text-md  text-center">
-        Enter OTP
-      </label>
-      <input type="text" id="otp-input"
-        class="block w-3/4 max-w-xs  px-4 py-4 text-xl border rounded-lg text-center bg-gray-50 transition-all"
-        placeholder="XXXXXX" maxlength="6" />
-      <div class="mt-4">
-        <p class="text-sm text-gray-400 text-center">
-          By confirm you agree to terms and conditions
-        </p>
-      </div>
-    </div>
-
-    <!-- Confirm Button -->
-    <button
-      class="w-11/12 mx-auto mt-6 py-4 px-6 rounded-lg font-medium transition-all duration-300 transform hover:scale-[0.99] flex items-center justify-center bg-black text-white hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-      id="confirmButton" disabled>
-      Confirm
-    </button>
-
-    <!-- Footer -->
-    <div class="m-6 pt-4 border-t border-gray-100">
-      <p class="text-xs text-gray-500 text-center">
-        Secured by TakaPay © 2025
-      </p>
-    </div>
-  </div>
-
-
-  <!-- PIN screen -->
-  <div id="pin-screen" class="hidden w-full max-w-md mx-auto bg-white rounded-lg shadow-xl">
-    <!-- Header -->
-    <div class="flex items-center justify-between m-6 border-b border-gray-100 pt-4 pb-8">
-      <div class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-800" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 11V4H4v7m0 4h16v7H4v-7m12 3H8" />
-        </svg>
-        <h1 class="text-xl font-bold text-gray-800">TakaPay</h1>
-      </div>
-      <button class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 6 6 18M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Merchant Info -->
-    <div class="flex items-center justify-between mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100 mx-6">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 14a2 2 0 0 0-2-2h-4m6-6v10m-2-8h-6m-2-2v2m0 10h-2v2M3 16h18M9 12H4v4h2v2h2" />
-          </svg>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-medium text-gray-900">Sample Merchant</span>
-        </div>
-      </div>
-      <div class="text-right">
-        <p class="font-bold text-xl text-gray-900">ট 1000.00</p>
-      </div>
-    </div>
-
-    <!-- Input Section -->
-    <div class="w-full h-[250px] bg-black flex flex-col items-center justify-center relative">
-      <label for="pin-input" class="mb-4 text-gray-200 text-md text-center">
-        Enter PIN
-      </label>
-      <input type="text" id="pin-input"
-        class="block w-3/4 max-w-xs px-4 py-4 text-xl border rounded-lg text-center bg-gray-50 transition-all"
-        placeholder="XXXXX" maxlength="5" />
-      <div class="mt-4">
-        <p class="text-sm text-gray-400 text-center">
-          By confirm you agree to terms and conditions
-        </p>
-      </div>
-    </div>
-    <!-- Confirm Button -->
-    <button
-      class="w-11/12 mx-auto mt-6 py-4 px-6 rounded-lg font-medium transition-all duration-300 transform hover:scale-[0.99] flex items-center justify-center  bg-black text-white hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-      id="confirmButton" disabled>
-      Confirm
-    </button>
-
-    <!-- Footer -->
-    <div class="m-6 pt-4 border-t border-gray-100">
-      <p class="text-xs text-gray-500 text-center">
-        Secured by TakaPay © 2025
-      </p>
-    </div>
-  </div>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const accountScreen = document.getElementById("account-screen");
-      const otpScreen = document.getElementById("otp-screen");
-      const pinScreen = document.getElementById("pin-screen");
-      const accountInput = document.getElementById("account-input");
-      const accountConfirmBtn = document.getElementById("account-confirm-btn");
-      const otpInput = document.getElementById("otp-input");
-      const otpConfirmBtn = document.getElementById("confirmButton");
-      const errorMessage = document.getElementById("error-message");
-      const btnText = document.getElementById("btn-text");
-
-      // Enable button when input is valid
-      accountInput.addEventListener("input", () => {
-        accountConfirmBtn.disabled = accountInput.value.length !== 11;
-        errorMessage.classList.add("hidden"); // Hide error message on input change
-      });
-
-      otpInput.addEventListener("input", () => {
-        otpConfirmBtn.disabled = otpInput.value.length !== 6;
-      });
-
-      // Handle confirm button click on account screen
-      accountConfirmBtn.addEventListener("click", async () => {
-        const phoneNumber = accountInput.value;
-
-        // Change button to loader state
-        accountConfirmBtn.disabled = true;
-        btnText.innerHTML = '<span class="dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>';
-
-        try {
-          // Make API call to verify wallet
-          const response = await fetch("https://quick-pay-96uq.onrender.com/api/wallet/verify", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ phone: phoneNumber }),
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            // If success is true, show OTP screen
-            accountScreen.classList.add("hidden");
-            otpScreen.classList.remove("hidden");
-          } else {
-            // If success is false, show error message
-            errorMessage.textContent = data.message || "An error occurred. Please try again.";
-            errorMessage.classList.remove("hidden");
-          }
-        } catch (error) {
-          // Handle API error
-          errorMessage.textContent = "Network error. Please try again.";
-          errorMessage.classList.remove("hidden");
-        } finally {
-          // Restore the button text and enable it again
-          accountConfirmBtn.disabled = false;
-          btnText.innerHTML = 'Confirm';
+      @keyframes dot {
+        0% {
+          opacity: 0;
         }
+
+        50% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* Ensure button background stays black and height is fixed */
+      #account-confirm-btn {
+        background-color: #4caf50 !important;
+        /* Force the background to stay black */
+        color: white;
+        /* Make the text white */
+        height: 50px;
+        /* Set a fixed height for the button */
+        display: flex;
+        align-items: center;
+        /* Vertically center content */
+        justify-content: center;
+        /* Horizontally center content */
+        padding: 0;
+        /* Ensure no extra padding affects the size */
+      }
+      #account-cancel-btn {
+        height: 50px;
+      }
+
+      /* When the button is in the "loading" state, display the dots */
+      #account-confirm-btn.loading {
+        pointer-events: none;
+        /* Prevent clicks during loading */
+      }
+
+      #account-confirm-btn.loading .dots {
+        display: inline-block;
+        /* Show the dots when loading */
+      }
+      input {
+        border: 1px solid #ccc; /* Default border */
+        outline: none; /* Remove default outline */
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        background-color: white !important;
+      }
+
+      input:focus {
+        background-color: white !important; /* Keep the background white on focus */
+        border-color: #4caf50; /* Change border color on focus */
+        outline: 2px solid #4caf50; /* Add green outline on focus */
+      }
+
+      #otp-confirm-btn {
+        background-color: #4caf50 !important;
+        /* Force the background to stay black */
+        color: white;
+        /* Make the text white */
+        height: 50px;
+        /* Set a fixed height for the button */
+        display: flex;
+        align-items: center;
+        /* Vertically center content */
+        justify-content: center;
+        /* Horizontally center content */
+        padding: 0;
+        /* Ensure no extra padding affects the size */
+      }
+      #otp-cancel-btn {
+        height: 50px;
+      }
+
+      /* When the button is in the "loading" state, display the dots */
+      #otp-confirm-btn.loading {
+        pointer-events: none;
+        /* Prevent clicks during loading */
+      }
+
+      #otp-confirm-btn.loading .dots {
+        display: inline-block;
+        /* Show the dots when loading */
+      }
+
+      #pin-confirm-btn {
+        background-color: #4caf50 !important;
+        /* Force the background to stay black */
+        color: white;
+        /* Make the text white */
+        height: 50px;
+        /* Set a fixed height for the button */
+        display: flex;
+        align-items: center;
+        /* Vertically center content */
+        justify-content: center;
+        /* Horizontally center content */
+        padding: 0;
+        /* Ensure no extra padding affects the size */
+      }
+      #otp-cancel-btn {
+        height: 50px;
+      }
+
+      /* When the button is in the "loading" state, display the dots */
+      #pin-confirm-btn.loading {
+        pointer-events: none;
+        /* Prevent clicks during loading */
+      }
+
+      #pin-confirm-btn.loading .dots {
+        display: inline-block;
+        /* Show the dots when loading */
+      }
+    </style>
+  </head>
+
+  <body
+    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200"
+  >
+    <!-- account screen  -->
+    <div
+      id="account-screen"
+      class="w-full max-w-md mx-auto bg-white rounded-lg shadow-xl"
+    >
+      <!-- Header -->
+      <div class="w-full h-[60px] mx-auto relative">
+        <div class="absolute top-[-50px] left-1/2 transform -translate-x-1/2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 100 100"
+            class="w-20 h-20"
+          >
+            <!-- Circle representing a coin or financial aspect -->
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="#4CAF50"
+              stroke="#4CAF50"
+              stroke-width="5"
+            />
+
+            <!-- Taka symbol (৳) in the center -->
+            <text
+              x="50"
+              y="50"
+              font-family="Arial, sans-serif"
+              font-size="20"
+              text-anchor="middle"
+              fill="white"
+              dy="-5"
+            >
+              ৳
+            </text>
+
+            <!-- TakaPay text below the Taka symbol -->
+            <text
+              x="50"
+              y="50"
+              font-family="Arial, sans-serif"
+              font-size="16"
+              text-anchor="middle"
+              fill="white"
+              dy="20"
+            >
+              TakaPay
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Merchant Info -->
+      <div
+        class="flex items-center justify-between mt- 4 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100 mx-6 w-11/12 mx-auto"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="150"
+              height="150"
+            >
+              <!-- Green Background Circle -->
+              <circle cx="12" cy="12" r="11" fill="#006a4e" />
+              <!-- Red Circle -->
+              <circle cx="9" cy="12" r="4" fill="#f42a41" />
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-medium text-gray-900">Sample Merchant</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="font-bold text-xl text-gray-900">ট 1000.00</p>
+        </div>
+      </div>
+
+      <!-- Input Section -->
+      <div
+        class="w-full h-[230px] px-6 py-8 flex flex-col items-center justify-center mt-4"
+        style="background-color: #ecf0f1"
+      >
+        <label
+          for="account-input"
+          class="text-gray-900 text-md mb-4 text-center"
+        >
+          Enter Wallet Number
+        </label>
+        <input
+          type="text"
+          id="account-input"
+          class="block w-full px-4 py-4 text-xl border rounded-lg text-center bg-white"
+          placeholder="01XXXXXXXXX"
+          maxlength="11"
+        />
+        <div id="error-message" class="hidden mt-4 text-red-500 text-center">
+          <!-- Error message will appear here -->
+        </div>
+        <div class="mt-4">
+          <p class="text-sm text-gray-900 text-center">
+            By confirm you agree to terms and conditions
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-between gap-4 w-11/12 mx-auto">
+        <button
+          class="w-11/12 mx-auto mt-6 py-4 px-6 rounded-lg font-medium transition-all duration-300 transform hover:scale-[0.99] flex items-center justify-center text-white hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+          id="account-cancel-btn"
+          disabled
+        >
+          Cancel
+        </button>
+        <!-- Confirm Button -->
+        <button
+          class="w-11/12 mx-auto mt-6 py-4 px-6 rounded-lg font-medium transition-all duration-300 transform hover:scale-[0.99] flex items-center justify-center text-white hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+          id="account-confirm-btn"
+          disabled
+        >
+          <span id="btn-text">Confirm</span>
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <div class="m-6 pt-4 border-t border-gray-100">
+        <p class="text-xs text-gray-500 text-center">
+          Secured by TakaPay © 2025
+        </p>
+      </div>
+    </div>
+
+    <!-- OTP screen -->
+
+    <div
+      id="otp-screen"
+      class="hidden w-full max-w-md mx-auto bg-white rounded-lg shadow-xl"
+    >
+      <!-- Header -->
+      <div class="w-full h-[60px] mx-auto relative">
+        <div class="absolute top-[-50px] left-1/2 transform -translate-x-1/2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 100 100"
+            class="w-20 h-20"
+          >
+            <!-- Circle representing a coin or financial aspect -->
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="#4CAF50"
+              stroke="#4CAF50"
+              stroke-width="5"
+            />
+
+            <!-- Taka symbol (৳) in the center -->
+            <text
+              x="50"
+              y="50"
+              font-family="Arial, sans-serif"
+              font-size="20"
+              text-anchor="middle"
+              fill="white"
+              dy="-5"
+            >
+              ৳
+            </text>
+
+            <!-- TakaPay text below the Taka symbol -->
+            <text
+              x="50"
+              y="50"
+              font-family="Arial, sans-serif"
+              font-size="16"
+              text-anchor="middle"
+              fill="white"
+              dy="20"
+            >
+              TakaPay
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Merchant Info -->
+      <div
+        class="flex items-center justify-between mt- 4 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100 mx-6 w-11/12 mx-auto"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="150"
+              height="150"
+            >
+              <!-- Green Background Circle -->
+              <circle cx="12" cy="12" r="11" fill="#006a4e" />
+              <!-- Red Circle -->
+              <circle cx="9" cy="12" r="4" fill="#f42a41" />
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-medium text-gray-900">Sample Merchant</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="font-bold text-xl text-gray-900">ট 1000.00</p>
+        </div>
+      </div>
+
+      <!-- Input Section -->
+      <div
+        class="w-full h-[230px] px-6 py-8 flex flex-col items-center justify-center mt-4"
+        style="background-color: #ecf0f1"
+      >
+        <label
+          for="account-input"
+          class="text-gray-900 text-md mb-4 text-center"
+        >
+          Enter 6 Digit OTP
+        </label>
+        <input
+          type="text"
+          id="otp-input"
+          class="block w-full px-4 py-4 text-xl border rounded-lg text-center bg-gray-50 transition-all"
+          placeholder="XXXXXX"
+          maxlength="6"
+        />
+        <div id="error-message" class="hidden mt-4 text-red-500 text-center">
+          <!-- Error message will appear here -->
+        </div>
+        <div class="mt-4">
+          <p class="text-sm text-gray-900 text-center">
+            By confirm you agree to terms and conditions
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-between gap-4 w-11/12 mx-auto">
+        <button
+          class="w-11/12 mx-auto mt-6 py-4 px-6 rounded-lg font-medium transition-all duration-300 transform hover:scale-[0.99] flex items-center justify-center text-white hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+          id="account-cancel-btn"
+          disabled
+        >
+          Cancel
+        </button>
+        <!-- Confirm Button -->
+        <button
+          class="w-11/12 mx-auto mt-6 py-4 px-6 rounded-lg font-medium transition-all duration-300 transform hover:scale-[0.99] flex items-center justify-center text-white hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+          id="otp-confirm-btn"
+          disabled
+        >
+          <span id="btn-text">Confirm</span>
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <div class="m-6 pt-4 border-t border-gray-100">
+        <p class="text-xs text-gray-500 text-center">
+          Secured by TakaPay © 2025
+        </p>
+      </div>
+    </div>
+
+    <!-- PIN screen -->
+    <div
+      id="pin-screen"
+      class="hidden w-full max-w-md mx-auto bg-white rounded-lg shadow-xl"
+    >
+      <!-- Header -->
+      <div class="w-full h-[60px] mx-auto relative">
+        <div class="absolute top-[-50px] left-1/2 transform -translate-x-1/2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 100 100"
+            class="w-20 h-20"
+          >
+            <!-- Circle representing a coin or financial aspect -->
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="#4CAF50"
+              stroke="#4CAF50"
+              stroke-width="5"
+            />
+
+            <!-- Taka symbol (৳) in the center -->
+            <text
+              x="50"
+              y="50"
+              font-family="Arial, sans-serif"
+              font-size="20"
+              text-anchor="middle"
+              fill="white"
+              dy="-5"
+            >
+              ৳
+            </text>
+
+            <!-- TakaPay text below the Taka symbol -->
+            <text
+              x="50"
+              y="50"
+              font-family="Arial, sans-serif"
+              font-size="16"
+              text-anchor="middle"
+              fill="white"
+              dy="20"
+            >
+              TakaPay
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Merchant Info -->
+      <div
+        class="flex items-center justify-between mt- 4 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100 mx-6 w-11/12 mx-auto"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="150"
+              height="150"
+            >
+              <!-- Green Background Circle -->
+              <circle cx="12" cy="12" r="11" fill="#006a4e" />
+              <!-- Red Circle -->
+              <circle cx="9" cy="12" r="4" fill="#f42a41" />
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-medium text-gray-900">Sample Merchant</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="font-bold text-xl text-gray-900">ট 1000.00</p>
+        </div>
+      </div>
+
+      <!-- Input Section -->
+      <div
+        class="w-full h-[230px] px-6 py-8 flex flex-col items-center justify-center mt-4"
+        style="background-color: #ecf0f1"
+      >
+        <label
+          for="account-input"
+          class="text-gray-900 text-md mb-4 text-center"
+        >
+          Enter PIN
+        </label>
+        <input
+          type="text"
+          id="pin-input"
+          class="block w-full px-4 py-4 text-xl border rounded-lg text-center bg-gray-50 transition-all"
+          placeholder="XXXXX"
+          maxlength="5"
+        />
+        <div id="error-message" class="hidden mt-4 text-red-500 text-center">
+          <!-- Error message will appear here -->
+        </div>
+        <div class="mt-4">
+          <p class="text-sm text-gray-900 text-center">
+            By confirm you agree to terms and conditions
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-between gap-4 w-11/12 mx-auto">
+        <button
+          class="w-11/12 mx-auto mt-6 py-4 px-6 rounded-lg font-medium transition-all duration-300 transform hover:scale-[0.99] flex items-center justify-center text-white hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+          id="account-cancel-btn"
+          disabled
+        >
+          Cancel
+        </button>
+        <!-- Confirm Button -->
+        <button
+          class="w-11/12 mx-auto mt-6 py-4 px-6 rounded-lg font-medium transition-all duration-300 transform hover:scale-[0.99] flex items-center justify-center text-white hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+          id="pin-confirm-btn"
+          disabled
+        >
+          <span id="btn-text">Confirm</span>
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <div class="m-6 pt-4 border-t border-gray-100">
+        <p class="text-xs text-gray-500 text-center">
+          Secured by TakaPay © 2025
+        </p>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const accountScreen = document.getElementById("account-screen");
+        const otpScreen = document.getElementById("otp-screen");
+        const pinScreen = document.getElementById("pin-screen");
+        const accountInput = document.getElementById("account-input");
+        const accountConfirmBtn = document.getElementById(
+          "account-confirm-btn"
+        );
+        const otpInput = document.getElementById("otp-input");
+        const otpConfirmBtn = document.getElementById("otp-confirm-btn");
+        const errorMessage = document.getElementById("error-message");
+        const btnText = document.getElementById("btn-text");
+
+        // Enable button when input is valid
+        accountInput.addEventListener("input", () => {
+          accountConfirmBtn.disabled = accountInput.value.length !== 11;
+          errorMessage.classList.add("hidden"); // Hide error message on input change
+        });
+
+        otpInput.addEventListener("input", () => {
+          otpConfirmBtn.disabled = otpInput.value.length !== 6;
+        });
+
+        // Handle confirm button click on account screen
+        accountConfirmBtn.addEventListener("click", async () => {
+          const phoneNumber = accountInput.value;
+
+          // Change button to loader state
+          accountConfirmBtn.disabled = true;
+          btnText.innerHTML =
+            '<span class="dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>';
+
+          try {
+            // Make API call to verify wallet
+            const response = await fetch(
+              "https://quick-pay-96uq.onrender.com/api/wallet/verify",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ phone: phoneNumber }),
+              }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+              // If success is true, show OTP screen
+              accountScreen.classList.add("hidden");
+              otpScreen.classList.remove("hidden");
+            } else {
+              // If success is false, show error message
+              errorMessage.textContent =
+                data.message || "An error occurred. Please try again.";
+              errorMessage.classList.remove("hidden");
+            }
+          } catch (error) {
+            // Handle API error
+            errorMessage.textContent = "Network error. Please try again.";
+            errorMessage.classList.remove("hidden");
+          } finally {
+            // Restore the button text and enable it again
+            accountConfirmBtn.disabled = false;
+            btnText.innerHTML = "Confirm";
+          }
+        });
+
+        // Handle confirm button click on OTP screen
+        otpConfirmBtn.addEventListener("click", () => {
+          otpScreen.classList.add("hidden");
+          pinScreen.classList.remove("hidden");
+        });
       });
-
-      // Handle confirm button click on OTP screen
-      otpConfirmBtn.addEventListener("click", () => {
-        otpScreen.classList.add("hidden");
-        pinScreen.classList.remove("hidden");
-      });
-    });
-  </script>
-
-
-</body>
-
+    </script>
+  </body>
 </html>
